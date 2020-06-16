@@ -174,23 +174,19 @@ if __name__ == "__main__":
 
     # Encapsulate in a function ?
     tmp = df_gwas
-    # Find out why can't column be a Series.
-    # tmp["sensi_pres"] = list(sensi_pres)
-    # tmp["sensi_abs"] = list(sensi_abs)
-    # tmp["speci_pres"] = list(speci_pres)
-    # tmp["speci_abs"] = list(speci_abs)
-    # test = pd.concat([tmp, sensi_pres, sensi_abs, speci_pres, speci_abs], axis=1)
-    
-    # get_mutation_count(df_rtab, df_gwas["variant"])
-    # nb of present in genomes of interest (1)
-    # AAArgh. not sure the order is respected
-    # Divide by presence.shape[0] after
-    # num of mutations in rtab, with phenotype 1, divided by num of genomes of the phenotype
+
     tmp["sensi_1"] = list(get_mutation_count(df_rtab[presence], df_gwas["variant"]) / df_rtab[presence].shape[1])
-    #tmp["sensi_1"]
     tmp["sensi_0"] = list(get_mutation_count(df_rtab[presence], df_gwas["variant"], mutation=0)  / df_rtab[presence].shape[1])
     
     tmp["speci_1"] = list(get_mutation_count(df_rtab[absence], df_gwas["variant"])  / df_rtab[absence].shape[1])
     tmp["speci_0"] = list(get_mutation_count(df_rtab[absence], df_gwas["variant"], mutation=0)  / df_rtab[absence].shape[1])
     
+    # Count
+    tmp["mutation_in_interest"] = list(get_mutation_count(df_rtab[presence], df_gwas["variant"]))
+    tmp["mutation_not_in_interest"] = list(get_mutation_count(df_rtab[presence], df_gwas["variant"], mutation=0))
+    
+    tmp["mutation_in_compared"] = list(get_mutation_count(df_rtab[absence], df_gwas["variant"]))
+    tmp["mutation_not_in_compared"] = list(get_mutation_count(df_rtab[absence], df_gwas["variant"], mutation=0))
+
     tmp.to_csv(output_file, sep="\t", index=False)
+    print(f"Wrote {output_file}")
